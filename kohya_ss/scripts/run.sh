@@ -31,7 +31,7 @@ for devid in range(0,torch.cuda.device_count()):
 EOF
 
 cd ${ROOT} && git pull
-if [[ ! -z "${ACCELERATE}" ]] && [ "${ACCELERATE}" = "True" ] && [ -x "$(command -v accelerate)" ]
+if [[ ! -z "${ACCELERATE}" ]] && [[ "${ACCELERATE}" = "True" ]] && [[ -x "$(command -v accelerate)" ]]
 then
     echo "Accelerating SD with distributed GPU+CPU..."
     accelerate launch --num_cpu_threads_per_process=6 $@

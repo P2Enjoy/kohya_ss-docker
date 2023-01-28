@@ -14,6 +14,8 @@ MOUNTS["/usr/local/cuda-11.1/targets/x86_64-linux/lib/libnvrtc.so"]="/usr/lib/x8
 MOUNTS["/usr/local/cuda-11.0/targets/x86_64-linux/lib/libcudart.so.11.0"]="/usr/lib/x86_64-linux-gnu/libcudart.so"
 MOUNTS["/usr/local/cuda-11.0/targets/x86_64-linux/lib/libcudart.so.11.0"]="/usr/lib/x86_64-linux-gnu/lib64/libcudart.so.11.0"
 
+MOUNTS["${ROOT}/data"]="/data"
+
 # main
 #MOUNTS["${ROOT}/models/VAE-approx"]="/data/VAE-approx"
 
