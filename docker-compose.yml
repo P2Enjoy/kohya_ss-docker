@@ -1,0 +1,64 @@
+version: '3.9'
+
+x-gpu-base-service: &gpu_service
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            device_ids: ['0']
+            capabilities: [gpu]
+
+x-base_service: &base_service
+  network_mode: "host"
+  user: "${UID:-0}:${GID:-0}"
+  build:
+      context: ./kohya_ss
+      args:
+        # Compile time args
+        TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/torch-*.whl /docker/torchvision-*.whl /docker/tensorflow-*.whl
+        PIP_REPOSITORY: https://download.pytorch.org/whl/cu116
+        PYTORCH_CUDA_ALLOC_CONF: garbage_collection_threshold:0.9,max_split_size_mb:256
+        MAX_GCC_VERSION: 10
+        JAX: False
+        TPU: False
+  volumes:
+    - &v1 ./data:/data
+    - &v2 /tmp/.X11-unix:/tmp/.X11-unix
+  deploy:
+    restart_policy:
+      delay: 5s
+      max_attempts: 10
+      window: 120s
+      
+x-environment: &kohya_service_envs
+  environment:
+    - TF_ENABLE_ONEDNN_OPTS=0
+    - ACCELERATE=True
+
+name: kohya-docker
+
+services:
+
+  kohya: &kohya_service
+    <<: *base_service
+    <<: *gpu_service
+    <<: *kohya_service_envs
+    profiles: ["kohya"]
+    environment: 
+      - TF_ENABLE_ONEDNN_OPTS=0
+      - XDG_CACHE_HOME=/data/.cache
+      - ACCELERATE=False
+      - DISPLAY=unix$DISPLAY
+      #- RUN_ARGS=/koyah_ss/kohya_gui.py
+      - RUN_ARGS=/koyah_ss/lora_gui.py
+      - RUNNER=/docker/run.sh
+      
+  kohya_debug:
+    <<: *kohya_service
+    <<: *kohya_service_envs
+    profiles: ["kohya_debug"]
+    stdin_open: true
+    tty: true
+    environment:
+      - RUNNER=/docker/debug.sh
