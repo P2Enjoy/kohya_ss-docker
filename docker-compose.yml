@@ -11,9 +11,9 @@ x-gpu-base-service: &gpu_service
 
 x-base_service: &base_service
   user: "${UID:-0}:${GID:-0}"
-  #network_mode: "host"
-  ports:
-    - "7680:7680"
+  network_mode: "host"
+  #ports:
+  #  - "7680:7680"
   build:
       context: ./kohya_ss
       args:
@@ -21,6 +21,8 @@ x-base_service: &base_service
         TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/torch-*.whl /docker/torchvision-*.whl /docker/tensorflow-*.whl
         PIP_REPOSITORY: https://download.pytorch.org/whl/cu116
         PYTORCH_CUDA_ALLOC_CONF: garbage_collection_threshold:0.9,max_split_size_mb:256
+        TORCH_CUDA_ARCH_LIST: 7.5
+        DS_BUILD_OPS: 1
         MAX_GCC_VERSION: 10
         JAX: False
         TPU: False

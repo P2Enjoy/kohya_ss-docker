@@ -5,7 +5,7 @@ set -Eeuo pipefail
 . /docker/mount.sh
 
 # Load environment
-source ${ROOT}/kohya_venv/bin/activate
+source "${ROOT}/kohya_venv/bin/activate"
 
 # check python
 python --version
@@ -30,8 +30,8 @@ for devid in range(0,torch.cuda.device_count()):
         print(torch.cuda.get_device_name(devid))
 EOF
 
-cd ${ROOT} && git pull
-if [[ ! -z "${ACCELERATE}" ]] && [[ "${ACCELERATE}" = "True" ]] && [[ -x "$(command -v accelerate)" ]]
+cd "${ROOT}" && git pull
+if [[ -n "${ACCELERATE}" ]] && [[ "${ACCELERATE}" = "True" ]] && [[ -x "$(command -v accelerate)" ]]
 then
     echo "Accelerating SD with distributed GPU+CPU..."
     accelerate launch --num_cpu_threads_per_process=6 $@
