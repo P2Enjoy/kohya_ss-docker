@@ -10,8 +10,10 @@ x-gpu-base-service: &gpu_service
             capabilities: [gpu]
 
 x-base_service: &base_service
-  network_mode: "host"
   user: "${UID:-0}:${GID:-0}"
+  #network_mode: "host"
+  ports:
+    - "7680:7680"
   build:
       context: ./kohya_ss
       args:
@@ -46,12 +48,12 @@ services:
     <<: *kohya_service_envs
     profiles: ["kohya"]
     environment: 
-      - TF_ENABLE_ONEDNN_OPTS=0
+      - TF_ENABLE_ONEDNN_OPTS=1
       - XDG_CACHE_HOME=/data/.cache
       - ACCELERATE=False
       - DISPLAY=unix$DISPLAY
-      #- RUN_ARGS=/koyah_ss/kohya_gui.py
-      - RUN_ARGS=/koyah_ss/lora_gui.py
+      - RUN_ARGS=/koyah_ss/kohya_gui.py --server_port 7680
+      #- RUN_ARGS=/koyah_ss/lora_gui.py
       - RUNNER=/docker/run.sh
       
   kohya_debug:

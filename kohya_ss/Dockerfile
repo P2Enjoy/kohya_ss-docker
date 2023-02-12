@@ -26,7 +26,7 @@ ENV RUN_ARGS=""
 RUN <<EOF
 # apt for general container dependencies
 apt-get update 
-apt-get install curl unzip gnupg2 moreutils git tk libglib2.0-0 gcc-$MAX_GCC_VERSION g++-$MAX_GCC_VERSION -y
+apt-get install curl unzip gnupg2 moreutils git tk libglib2.0-0 libaio-dev gcc-$MAX_GCC_VERSION g++-$MAX_GCC_VERSION -y
 update-alternatives --install /usr/bin/gcc gcc $(which gcc-$MAX_GCC_VERSION) 1
 update-alternatives --install /usr/bin/g++ g++ $(which g++-$MAX_GCC_VERSION) 1
 apt-get full-upgrade -y
@@ -44,7 +44,7 @@ deb-src https://ppa.launchpadcontent.net/deadsnakes/ppa/ubuntu ${VERSION_CODENAM
 apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F51BA6932366A755776
 apt-get update
 
-apt-get install -y python3.10 python3.10-tk python3.10-venv
+apt-get install -y python3.10 python3.10-dev python3.10-tk python3.10-venv
 #apt-get install -y python3-minimal libpython3-dev libpython3-stdlib python3-venv python3-pip python3-tk
 update-alternatives --install /usr/bin/python python $(which python3.10) 1
 
@@ -93,13 +93,13 @@ $TORCH_COMMAND
 EOF
 
 RUN <<EOF
-# Build requirements
-/bin/bash /docker/install-container-dep.sh --use-pep517 --upgrade -r ${ROOT}/requirements.txt
+# xformers
+/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed /docker/xformers-*.whl
 EOF
 
 RUN <<EOF
-# xformers
-/bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed triton==2.0.0.dev20221120 /docker/xformers-*.whl #xformers==0.0.16rc425
+# Build requirements
+/bin/bash /docker/install-container-dep.sh --use-pep517 --upgrade -r ${ROOT}/requirements.txt
 EOF
 
 #################################################################################################################################################
