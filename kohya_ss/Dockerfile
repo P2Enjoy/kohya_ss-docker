@@ -12,7 +12,9 @@ ARG TPU
 ARG PIP_REPOSITORY
 ARG TORCH_CUDA_ARCH_LIST
 ARG DS_BUILD_OPS
+ARG TRITON_VERSION
 
+ENV TRITON_VERSION=${TRITON_VERSION}
 ENV TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST}
 ENV DS_BUILD_OPS=${DS_BUILD_OPS}
 ENV PIP_REPOSITORY=${PIP_REPOSITORY}
@@ -49,7 +51,6 @@ apt-key adv --keyserver keyserver.ubuntu.com --recv-keys F23C5A6CF475977595C89F5
 apt-get update
 
 apt-get install -y python3.10 python3.10-dev python3.10-tk python3.10-venv
-#apt-get install -y python3-minimal libpython3-dev libpython3-stdlib python3-venv python3-pip python3-tk
 update-alternatives --install /usr/bin/python python $(which python3.10) 1
 
 curl https://bootstrap.pypa.io/get-pip.py | python
@@ -102,6 +103,12 @@ RUN <<EOF
 EOF
 
 RUN <<EOF
+# deepspeed
+pip install --pre triton==${TRITON_VERSION}
+TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST} DS_BUILD_OPS=${DS_BUILD_OPS} DS_BUILD_SPARSE_ATTN=0 pip install deepspeed
+EOF
+
+RUN <<EOF
 # Build requirements
 /bin/bash /docker/install-container-dep.sh --use-pep517 --upgrade -r ${ROOT}/requirements.txt
 EOF
@@ -125,6 +132,7 @@ EOF
 COPY ./scripts /docker/
 RUN <<EOF
 chmod +x /docker/{run,mount,debug}.sh
+sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
 EOF
 
 EXPOSE 7860
