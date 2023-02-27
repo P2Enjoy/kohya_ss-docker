@@ -105,7 +105,7 @@ EOF
 RUN <<EOF
 # deepspeed
 pip install --pre triton==${TRITON_VERSION}
-TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST} DS_BUILD_OPS=${DS_BUILD_OPS} DS_BUILD_SPARSE_ATTN=0 pip install deepspeed
+TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST} DS_BUILD_OPS=${DS_BUILD_OPS} DS_BUILD_SPARSE_ATTN=0 pip install deepspeed==0.8.0
 EOF
 
 RUN <<EOF
@@ -132,7 +132,7 @@ EOF
 COPY ./scripts /docker/
 RUN <<EOF
 chmod +x /docker/{run,mount,debug}.sh
-sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
+#sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
 EOF
 
 EXPOSE 7860
