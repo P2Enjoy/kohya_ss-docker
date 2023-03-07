@@ -129,12 +129,16 @@ ldconfig
 EOF
 
 #################################################################################################################################################
-COPY ./scripts /docker/
+COPY ./scripts/*.sh /docker/
 RUN <<EOF
 chmod +x /docker/{run,mount,debug}.sh
 #sed -i 's/in_app_dir = .*/in_app_dir = True/g' /usr/local/lib/python3.10/site-packages/gradio/routes.py
 EOF
 
-EXPOSE 7860
+# Kohya gui
+EXPOSE 7680
+# Tensorboard
+EXPOSE 6006
+
 ENTRYPOINT $RUNNER $RUN_ARGS
 
