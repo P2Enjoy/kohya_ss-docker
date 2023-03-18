@@ -20,13 +20,14 @@ x-base_service: &base_service
         TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/torch-*.whl /docker/torchvision-*.whl /docker/tensorflow-*.whl
         PIP_REPOSITORY: https://download.pytorch.org/whl/cu116
         PYTORCH_CUDA_ALLOC_CONF: garbage_collection_threshold:0.9,max_split_size_mb:256
-        TRITON_VERSION: 2.0.0.dev20230208
+        TRITON_VERSION: 2.0.0
         DEEPSPEED_VERSION: 0.8.0
         TORCH_CUDA_ARCH_LIST: 7.5
         DS_BUILD_OPS: 1
         MAX_GCC_VERSION: 10
         JAX: False
         TPU: False
+        DEEPSPEED: False
   volumes:
     - &v1 ./data:/data
     - &v2 /tmp/.X11-unix:/tmp/.X11-unix
