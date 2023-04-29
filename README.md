@@ -3,6 +3,12 @@ This is the tandem repository to exploit on linux the kohya_ss training webui co
 
 Read the data sections for [wheels](kohya_ss/data) and [packages](kohya_ss/data/libs) prior to compiling the image or IT WILL FAIL.
 
+# Google collab version
+Here is the OFFICIAL Google Collab implementation: 
+- https://gist.github.com/martinobettucci/545adb371fcc6a72e8a72e66eae482dc
+
+# Offline on your own hardware version
+
 ## Compile Tensorflow and XFormer for your architecture
 
 There is a dockerised package of Stable Diffusion AUTOMATIC1111 we maintains here: [Stable Diffusion AUTOMATIC1111 P2Enjoy Docker Version](https://github.com/P2Enjoy/stable-diffusion-docker).  
