@@ -17,7 +17,7 @@ x-base_service: &base_service
       context: ./kohya_ss
       args:
         # Compile time args
-        TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/torch-*.whl /docker/torchvision-*.whl /docker/tensorflow-*.whl
+        TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/torch{-,_cpu-}*.whl /docker/torchvision{-,_cpu-}*.whl /docker/tensorflow{-,_cpu-}*.whl
         PIP_REPOSITORY: https://download.pytorch.org/whl/cu116
         PYTORCH_CUDA_ALLOC_CONF: garbage_collection_threshold:0.9,max_split_size_mb:256
         TRITON_VERSION: 2.0.0
@@ -47,9 +47,7 @@ name: kohya-docker
 services:
 
   kohya: &kohya_service
-    <<: *base_service
-    <<: *gpu_service
-    <<: *kohya_service_envs
+    <<: [*base_service, *gpu_service, *kohya_service_envs]
     profiles: ["kohya"]
     environment: 
       - TF_ENABLE_ONEDNN_OPTS=1
@@ -61,8 +59,7 @@ services:
       - RUNNER=/docker/run.sh
       
   kohya_debug:
-    <<: *kohya_service
-    <<: *kohya_service_envs
+    <<: [*base_service, *kohya_service_envs]
     profiles: ["kohya_debug"]
     stdin_open: true
     tty: true
