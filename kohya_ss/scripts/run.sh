@@ -13,6 +13,10 @@ python --version
 pip freeze | tee /data/requirements.txt
 #check tensors
 python <<EOF
+import torch
+for devid in range(0,torch.cuda.device_count()):
+        print('torch.cuda.get_device_name()')
+        print(torch.cuda.get_device_name(devid))
 
 import tensorflow
 from tensorflow.python.compiler.tensorrt import trt_convert as trt
@@ -23,11 +27,6 @@ print('trt.trt_utils._pywrap_py_utils.get_linked_tensorrt_version()')
 print(trt.trt_utils._pywrap_py_utils.get_linked_tensorrt_version())
 print('trt.trt_utils._pywrap_py_utils.get_loaded_tensorrt_version()')
 print(trt.trt_utils._pywrap_py_utils.get_loaded_tensorrt_version())
-
-import torch
-for devid in range(0,torch.cuda.device_count()):
-        print('torch.cuda.get_device_name()')
-        print(torch.cuda.get_device_name(devid))
 EOF
 
 # Workaround for memory leak
