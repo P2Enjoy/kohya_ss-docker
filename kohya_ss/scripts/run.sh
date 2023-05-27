@@ -30,6 +30,12 @@ for devid in range(0,torch.cuda.device_count()):
         print(torch.cuda.get_device_name(devid))
 EOF
 
+# Workaround for memory leak
+if [[ ! -L "/usr/lib/x86_64-linux-gnu/libtcmalloc.so" ]]; then
+  apt-get -y install libgoogle-perftools-dev
+fi
+export LD_PRELOAD=libtcmalloc.so
+
 cd "${ROOT}" && git pull
 if [[ -n "${ACCELERATE}" ]] && [[ "${ACCELERATE}" = "True" ]] && [[ -x "$(command -v accelerate)" ]]
 then
