@@ -5,7 +5,10 @@ set -Eeuo pipefail
 . /docker/mount.sh
 
 # Load environment
-source "${ROOT}/kohya_venv/bin/activate"
+source "/venv/bin/activate"
+
+# Hack ProtoBuffer
+wget https://raw.githubusercontent.com/protocolbuffers/protobuf/main/python/google/protobuf/internal/builder.py -O /venv/lib/python${pyver}/site-packages/google/protobuf/internal/builder.py
 
 # check python
 python --version

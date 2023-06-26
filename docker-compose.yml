@@ -1,6 +1,15 @@
 version: '3.9'
 
 x-gpu-base-service: &gpu_service
+  #runtime: nvidia
+  privileged: true
+  devices:
+    - /dev/nvidia0:/dev/nvidia0
+    - /dev/nvidiactl:/dev/nvidiactl
+    - /dev/nvidia-caps:/dev/nvidia-caps
+    - /dev/nvidia-modeset:/dev/nvidia-modeset
+    - /dev/nvidia-uvm:/dev/nvidia-uvm
+    - /dev/nvidia-uvm-tools:/dev/nvidia-uvm-tools
   deploy:
     resources:
       reservations:
@@ -11,23 +20,34 @@ x-gpu-base-service: &gpu_service
 
 x-base_service: &base_service
   user: "${UID:-0}:${GID:-0}"
+  #network_mode: "host"
   ports:
-    - "127.0.0.1:7680:7680"
+    - "7860:7680"
   build:
-      context: ./kohya_ss
-      args:
-        # Compile time args
-        TORCH_COMMAND: eval /bin/bash /docker/install-container-dep.sh /docker/torch{-,_cpu-}*.whl /docker/torchvision{-,_cpu-}*.whl /docker/tensorflow{-,_cpu-}*.whl
-        PIP_REPOSITORY: https://download.pytorch.org/whl/cu116
-        PYTORCH_CUDA_ALLOC_CONF: garbage_collection_threshold:0.9,max_split_size_mb:256
-        TRITON_VERSION: 2.0.0
-        DEEPSPEED_VERSION: 0.8.0
-        TORCH_CUDA_ARCH_LIST: 7.5
-        DS_BUILD_OPS: 1
-        MAX_GCC_VERSION: 10
-        JAX: False
-        TPU: False
-        DEEPSPEED: False
+    context: ./service
+    args:
+      # Compile time args
+      pyver: "3.10"
+      pyimage: python:3.10-slim
+      #XFORMERS_COMMAND: /bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed  /docker/xformers-*.whl
+      XFORMERS_COMMAND: /bin/bash /docker/install-container-dep.sh xformers==0.0.20
+      #TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/tensorflow-*.whl /docker/torch-*.whl /docker/torchvision-*.whl /docker/torchaudio-*.whl
+      TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh torch==2.0.0+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.0+cu118
+      #TENSORFLOW_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/tensorflow-*.whl
+      TENSORFLOW_COMMAND: /bin/bash /docker/install-container-dep.sh tensorflow==2.12.0
+      # General configuration
+      PIP_REPOSITORY: "https://download.pytorch.org/whl/cu118"
+      PYTORCH_CUDA_ALLOC_CONF: "garbage_collection_threshold:0.9,max_split_size_mb:256"
+      TRITON_VERSION: "2.0.0"
+      DEEPSPEED_VERSION: "0.9.2"
+      CUDNN_VERSION: "8.6.0.163"
+      CUDA_VERSION: cuda-drivers-530 #cuda-11-8
+      DS_BUILD_OPS: 1
+      TORCH_CUDA_ARCH_LIST: 7.5+PTX
+      NVCC_FLAGS: --use_fast_math
+      JAX: False
+      TPU: False
+      DEEPSPEED: False
   volumes:
     - &v1 ./data:/data
     - &v2 /tmp/.X11-unix:/tmp/.X11-unix
@@ -37,29 +57,24 @@ x-base_service: &base_service
       max_attempts: 10
       window: 120s
       
-x-environment: &kohya_service_envs
-  environment:
-    - TF_ENABLE_ONEDNN_OPTS=0
-    - ACCELERATE=True
-
 name: kohya-docker
 
 services:
 
   kohya: &kohya_service
-    <<: [*base_service, *gpu_service, *kohya_service_envs]
+    <<: [*base_service, *gpu_service]
     profiles: ["kohya"]
     environment: 
       - TF_ENABLE_ONEDNN_OPTS=1
       - XDG_CACHE_HOME=/data/.cache
       - ACCELERATE=False
       - DISPLAY=unix$DISPLAY
+      - SAFETENSORS_FAST_GPU=1
       - RUN_ARGS=/koyah_ss/kohya_gui.py --listen 0.0.0.0 --server_port 7680
-      #- RUN_ARGS=/koyah_ss/lora_gui.py
       - RUNNER=/docker/run.sh
       
   kohya_debug:
-    <<: [*base_service, *kohya_service_envs]
+    <<: [*base_service]
     profiles: ["kohya_debug"]
     stdin_open: true
     tty: true
