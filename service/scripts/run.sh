@@ -41,9 +41,10 @@ export LD_PRELOAD=libtcmalloc.so
 cd "${ROOT}" && bash ./upgrade.sh
 if [[ -n "${ACCELERATE}" ]] && [[ "${ACCELERATE}" = "True" ]] && [[ -x "$(command -v accelerate)" ]]
 then
-    echo "Accelerating SD with distributed GPU+CPU..."
+    echo "Accelerating with distributed GPU+CPU..."
     accelerate launch --num_cpu_threads_per_process=6 $@
 else
+    echo "Loading GUI unbuffered..."
     python -u $@
 fi
 
