@@ -32,7 +32,7 @@ x-base_service: &base_service
       #XFORMERS_COMMAND: /bin/bash /docker/install-container-dep.sh --upgrade-strategy only-if-needed  /docker/xformers-*.whl
       XFORMERS_COMMAND: /bin/bash /docker/install-container-dep.sh xformers==0.0.20
       #TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/tensorflow-*.whl /docker/torch-*.whl /docker/torchvision-*.whl /docker/torchaudio-*.whl
-      TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh torch==2.0.1+cu118 torchvision==0.15.1+cu118 torchaudio==2.0.1+cu118
+      TORCH_COMMAND: /bin/bash /docker/install-container-dep.sh torch==2.0.1+cu118 torchvision==0.15.2+cu118 torchaudio==2.0.1+cu118
       #TENSORFLOW_COMMAND: /bin/bash /docker/install-container-dep.sh /docker/tensorflow-*.whl
       TENSORFLOW_COMMAND: /bin/bash /docker/install-container-dep.sh tensorflow==2.12.0
       # General configuration
