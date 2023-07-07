@@ -38,7 +38,7 @@ if [[ ! -L "/usr/lib/x86_64-linux-gnu/libtcmalloc.so" ]]; then
 fi
 export LD_PRELOAD=libtcmalloc.so
 
-cd "${ROOT}" && git fetch && git reset --hard HEAD
+cd "${ROOT}" && bash ./upgrade.sh
 if [[ -n "${ACCELERATE}" ]] && [[ "${ACCELERATE}" = "True" ]] && [[ -x "$(command -v accelerate)" ]]
 then
     echo "Accelerating SD with distributed GPU+CPU..."
