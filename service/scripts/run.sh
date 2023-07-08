@@ -45,7 +45,7 @@ then
     accelerate launch --num_cpu_threads_per_process=6 $@
 else
     echo "Loading GUI unbuffered..."
-    python -u $@
+    $@
 fi
 
 echo "Shutting down in 10 seconds"

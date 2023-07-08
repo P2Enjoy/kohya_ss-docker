@@ -152,6 +152,7 @@ EOF
 FROM kohya_base as kohya_cuda
 
 ARG CUDA_VERSION
+ARG CUDA_DRIVERS
 ARG pyver
 
 ENV CUDA_HOME=/usr/local/cuda
@@ -168,6 +169,7 @@ RUN <<EOF
 # cuda driver update
 apt-get update
 apt-get -y install $CUDA_VERSION
+apt-get -y install $CUDA_DRIVERS
 EOF
 
 ############################################################################################################################################################################################
