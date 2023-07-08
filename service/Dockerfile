@@ -12,6 +12,7 @@ ARG CUDNN_VERSION
 ARG NVCC_FLAGS
 ARG pyver
 ARG PIP_REPOSITORY
+ARG CUDA_KEYRING
 
 ENV NVCC_FLAGS=${NVCC_FLAGS}
 ENV TORCH_CUDA_ARCH_LIST=${TORCH_CUDA_ARCH_LIST}
@@ -37,21 +38,21 @@ apt-get install curl unzip gnupg2 moreutils git tk libglib2.0-0 libaio-dev gcc g
 EOF
 
 RUN <<EOF
-# cuda
-wget https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/cuda-keyring_1.1-1_all.deb
-dpkg -i cuda-keyring_1.1-1_all.deb
+# apt configurations
 export VERSION_CODENAME="$(cat /etc/*-release | fgrep VERSION_CODENAME | cut -d'=' -f2)"
 export VERSION_ID="$(cat /etc/*-release | fgrep VERSION_ID | cut -d'=' -f2)"
 echo "
+
 # Full debian sources
 deb http://deb.debian.org/debian $VERSION_CODENAME main contrib
-deb http://deb.debian.org/debian $VERSION_CODENAME main non-free
-deb http://deb.debian.org/debian $VERSION_CODENAME main non-free-firmware
-
-# Nvidia Official channel (not yet available for debian12)
-deb https://developer.download.nvidia.com/compute/cuda/repos/debian11/x86_64/ /
-
 " >> /etc/apt/sources.list
+apt-get update
+EOF
+
+RUN <<EOF
+# cuda configurations
+wget -O cuda-keyring.deb $CUDA_KEYRING
+dpkg -i cuda-keyring.deb
 apt-get update
 EOF
 
@@ -168,8 +169,8 @@ EOF
 RUN <<EOF
 # cuda driver update
 apt-get update
-apt-get -y install $CUDA_VERSION
 apt-get -y install $CUDA_DRIVERS
+apt-get -y install $CUDA_VERSION
 EOF
 
 ############################################################################################################################################################################################
